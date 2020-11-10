@@ -1,0 +1,11 @@
+/.idea
+/.project
+*.pyc
+/target
+/log
+*.iml
+/data
+/scarica
+/.settings
+.pydevproject
+/client.pid

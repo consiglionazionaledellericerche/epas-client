@@ -1,0 +1,69 @@
+version: "3"
+services:
+
+   ############################################################################
+   # Client timbrature per Lettura da Smartclok, oppure file da un server     #
+   # FTP/SFTP o da una cartella locale                                        #
+   ############################################################################
+  client:
+    image: consiglionazionalericerche/epas-client
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ${PWD}/data:/client/data
+      # da utilizzare e personalizzare in caso di timbrature in cartella locale
+      # - ${PWD}/folder-timbrature:/client/data/source
+
+    environment:
+      ############ PARAMETRO CHE DEFINISCE IL PROTOCOLLO PER PRELEVARE LE TIMBRATURE ############# 
+      - STAMPINGS_SERVER_PROTOCOL=${STAMPINGS_SERVER_PROTOCOL}  # Possibili valori: smartclock, local, ftp, sftp
+                                                                # Parametro obbligatorio 
+
+      ##################     PARAMETRI PER L'INVIO TIMBRATURE AD EPAS    #########################    
+      - SERVER_HOST=${SERVER_HOST}                    # Host del server di ePAS
+                                                      # Parametro obbligatorio. Esempio: epas.devel.iit.cnr.it
+      # - SERVER_PROTOCOL=${SERVER_PROTOCOL}          # Default: https. (http, https)
+      # - SERVER_PORT=${SERVER_PORT}                  # Default: 443
+
+      - EPAS_CLIENT_USER=${EPAS_CLIENT_USER}          # Utente della "sorgente timbrature" di ePAS. 
+      - EPAS_CLIENT_PASSWORD=${EPAS_CLIENT_PASSWORD}  # Password della "sorgente timbrature" di ePAS
+
+      #########################     PARAMETRI PER SMARTCLOCK    ##################################  
+      # Parametri per l'accesso al lettore di badge da utilizzare solo per il protocollo smartclock
+
+      # - BR_IP_ADDRESS=${BR_IP_ADDRESS}              # Indirizzo IP del lettore badge
+      ## - BR_PORT=                                   # Default: 21. Porta del servizio ftp
+      # - BR_USER=${BR_USER}                          # Utente del lettore bagde
+      # - BR_PASSWORD=${BR_PASSWORD}                  # Password del lettore badge
+      
+      # ##################     PARAMETRI PER FILE DA FTP/SFTP SERVER    ##########################    
+      # Parametri FTP/SFTP da utilizzare solo per i protocolli ftp e sftp
+
+      # - FTP_SERVER_NAME=${FTP_SERVER_NAME}          # Indirizzo IP del server ftp/sftp
+      ## - FTP_SERVER_PORT=${FTP_SERVER_PORT}         # Default 21. Porta del servizio ftp/sftp
+      # - FTP_USERNAME=${FTP_USERNAME}
+      # - FTP_PASSWORD=${FTP_PASSWORD}
+      ## - FTP_SERVER_DIR=${FTP_SERVER_DIR}           # Directory del servizio ftp/sftp contenente le timbrature    
+      # - FTP_FILE_PREFIX=${FTP_FILE_PREFIX}          # Default: 20
+      # - FTP_FILE_SUFFIX=${FTP_FILE_SUFFIX}          # Default: nessun suffix
+                  
+      # La regex di default è per gli SmartClock
+      # Per gli altri casi è necessario generare la propria regex in funzione del formato esportato per le proprie timbrature
+      # Attenzione che se ci sono $ e la regex è scritta nel docker-compose allora vanno scritti com $$ 
+      # - REGEX_STAMPING=${REGEX_STAMPING}          # Default: ^(?P<operazione>[0,E,U,T])(?P<tipo>\w{1})(?P<giornoSettimana>\d{1})(?P<matricolaFirma>\d{6})(?P<causale>\d{4})(?P<ora>\d{2})(?P<minuti>\d{2})(?P<secondi>\d{2})(?P<giorno>\d{2})(?P<mese>\d{2})(?P<anno>\d{2})(?P<lettore>\d{2})$
+      
+      ################### PARAMETRI GENERICI GENERALMENTE DA NON IMPOSTARE #######################
+       
+      # - OFFSET_ANNO_BADGE=       # Default: 2000
+      # - LOG_LEVEL=               # Default: INFO
+      # - MAX_THREADS=             # Default: 1
+      # - CRON=* * * * *           # Default: ogni 15 minuti dalle 6 alle 23. utilizzare il formato richiesto dal crontab. Riferimenti -> https://en.wikipedia.org/wiki/Cron#Examples
+      # - CRON_RANDOM_SLEEP=       # Default: 180. Secondi di sleep random massimo prima di lanciare il client per le timbrature. 
+      # - PROBLEMS_CRON=           # Default: all'una di notte. Invio di tutte le timbrature non inviate correttamente a epas (badge non trovato o altri problemi)
+      # - MAX_BAD_STAMPING_DAYS=   # Default: 10. Tutte le timbrature con problemi, più vecchie di questo numero di giorni dal momento dell'esecuzione, vengono buttate via
+      # - SERVER_ERROR_CODES=      # Default: 401, 404, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509. Specificare i valori separati da virgola che comportano un reinvio delle timbrature
+      # - MAPPING_OPERAZIONE_CLIENT_SERVER=   # Default: {'E':'0','U':'1'}
+      # - MAPPING_CAUSALI_CLIENT_SERVER=      # Default: {'0000': None, '0001': 'motiviDiServizio', '0007': 'pausaPranzo'}
+
+    restart: unless-stopped

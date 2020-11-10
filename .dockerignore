@@ -1,0 +1,10 @@
+*
+!*.py
+!epas_client
+!epas_client_file
+!docker_conf
+!*.txt
+!*.md
+!*.sh
+!.env
+!LICENSE
