@@ -25,14 +25,15 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="epas-client-unified",
+    name="epas-client",
     version="1.0.0",
     author="Team di ePAS - IIT/CNR",
     author_email="epas@iit.cnr.it",
-    description="ePAS client per prelevamento timbratute da file locali/ftp/sftp",
+    description="ePAS client per prelevamento timbratute da file " + 
+        "locali/ftp/sftp e lettore badge Smartclock",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/consiglionazionaledellericerche/epas-client-unified",
+    url="https://github.com/consiglionazionaledellericerche/epas-client",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
