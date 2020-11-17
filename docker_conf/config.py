@@ -7,7 +7,7 @@
 # client di acquisizione delle timbrature.                                      #
 #                                                                               #
 # Author: Cristian Lucchesi <cristian.lucchesi@iit.cnr.it>                      #
-# Last Modified: 2020-11-05 19:24                                               #
+# Last Modified: 2020-11-17 19:34                                               #
 #################################################################################
 
 #################################################################################
@@ -120,7 +120,7 @@ MAPPING_OPERAZIONE_CLIENT_SERVER = {{MAPPING_OPERAZIONE_CLIENT_SERVER}}
 
 #File all'interno del quale vengono salvate le informazioni relative all'ultimo
 #file di timbrature processato dal client
-FILE_LAST_DOWNLOAD="ultimo_file.txt"
+FILE_LAST_DOWNLOAD = "ultimo_file.txt"
 
 ###############################################################################
 # Parametri di configurazione standard da non modificare a meno di non        #
@@ -174,12 +174,12 @@ FTP_USERNAME = "{{FTP_USERNAME}}"
 FTP_PASSWORD = "{{FTP_PASSWORD}}"
 
 #Directory del server FTP/SFTP in cui sono presenti i file con le timbrature
-FTP_SERVER_DIR="{{FTP_SERVER_DIR}}"
+FTP_SERVER_DIR = "{{FTP_SERVER_DIR}}"
 
 #Prefisso e suffisso dei file con le timbrature
 #I nomi del file son nella forma ATAAMMGG (es. AT20120805)
-FTP_FILE_PREFIX="{{FTP_FILE_PREFIX}}"
-FTP_FILE_SUFFIX="{{FTP_FILE_SUFFIX}}"
+FTP_FILE_PREFIX = "{{FTP_FILE_PREFIX}}"
+FTP_FILE_SUFFIX = "{{FTP_FILE_SUFFIX}}"
 
 ###############################################################################
 # Parametri di configurazione del lettore badge dal quale scaricare le        #
@@ -190,3 +190,12 @@ BADGE_READER_IP = "{{BR_IP}}"
 BADGE_READER_PORT = {{BR_PORT}}
 BADGE_READER_USER = "{{BR_USER}}"
 BADGE_READER_PSW = "{{BR_PSW}}"
+
+###############################################################################
+# Parametri di configurazione per l'invio delle metriche ad un pushgateway    #
+###############################################################################
+
+METRICS_ENABLED = "{{METRICS_ENABLED}}"
+METRICS_PUSHGATEWAY_URL = "{{METRICS_PUSHGATEWAY_URL}}"
+METRICS_PUSHGATEWAY_USER= "{{METRICS_PUSHGATEWAY_USER}}"
+METRICS_PUSHGATEWAY_PASSWORD = "{{METRICS_PUSHGATEWAY_PASSWORD}}"

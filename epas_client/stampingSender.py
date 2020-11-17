@@ -24,7 +24,7 @@
 # Description: classe per inviare le timbrature all'applicazione "Epas".      #
 #                                                                             #
 # Author: Cristian Lucchesi <cristian.lucchesi@iit.cnr.it>                    #
-# Last Modified: 2020-10-30 18:28                                             #
+# Last Modified: 2020-11-17 19:28                                             #
 ###############################################################################
 
 import json
@@ -33,45 +33,42 @@ import logging
 import requests
 from requests.auth import HTTPBasicAuth
 
-from config import EPAS_REST_USERNAME, EPAS_REST_PASSWORD
-from config import EPAS_SERVER_PROTOCOL, EPAS_SERVER_NAME, EPAS_SERVER_PORT, EPAS_STAMPING_URL
-from config import CONNECTION_TIMEOUT
+from config import EPAS_REST_USERNAME, EPAS_REST_PASSWORD, \
+    EPAS_SERVER_PROTOCOL, EPAS_SERVER_NAME, EPAS_SERVER_PORT, \
+    EPAS_STAMPING_URL, CONNECTION_TIMEOUT
+from metrics import SEND_TIME
 
-class StampingSender:
+@SEND_TIME.time()
+def sendStamping(stamping):
     """
-    Invia le timbrature al sistema di gestione delle presenze Epas
+    Effettua una PUT Restful di una timbratura sul sistema Epas
     """
 
-    @staticmethod
-    def send(stamping):
-        """
-        Effettua una PUT Restful di una timbratura sul sistema Epas
-        """
+    logging.debug("Sto per inviare la timbratura %s", stamping)
+    stampingJson = json.dumps(stamping.__dict__)
 
-        logging.debug("Sto per inviare la timbratura %s", stamping)
-        stampingJson = json.dumps(stamping.__dict__)
+    url = "%s://%s:%d%s" % (EPAS_SERVER_PROTOCOL, EPAS_SERVER_NAME, 
+                            EPAS_SERVER_PORT, EPAS_STAMPING_URL)
 
-        url = "%s://%s:%d%s" % (EPAS_SERVER_PROTOCOL, EPAS_SERVER_NAME, EPAS_SERVER_PORT, EPAS_STAMPING_URL)
+    try:
+        if EPAS_REST_USERNAME and EPAS_REST_PASSWORD:
+            response = requests.put(url, data=stampingJson,
+                                    auth=HTTPBasicAuth(EPAS_REST_USERNAME, EPAS_REST_PASSWORD),
+                                    timeout=(3.05, CONNECTION_TIMEOUT))
+        else:
+            response = requests.put(url, data=stampingJson)
 
-        try:
-            if EPAS_REST_USERNAME and EPAS_REST_PASSWORD:
-                response = requests.put(url, data=stampingJson,
-                                        auth=HTTPBasicAuth(EPAS_REST_USERNAME, EPAS_REST_PASSWORD),
-                                        timeout=(3.05, CONNECTION_TIMEOUT))
-            else:
-                response = requests.put(url, data=stampingJson)
+    except requests.exceptions.RequestException as re:
+        logging.warn("Errore di Connessione al server: %s", re)
+        return None
+    except Exception as e:
+        logging.warn("Errore durante l'invio delle timbratura %s al server: %s", stamping, e)
+        return None
 
-        except requests.exceptions.RequestException as re:
-            logging.warn("Errore di Connessione al server: %s", re)
-            return None
-        except Exception as e:
-            logging.warn("Errore durante l'invio delle timbratura %s al server: %s", stamping, e)
-            return None
-        
-        logging.info("Inviata la timbratura %s. Response code=%d, response content = %s", stampingJson,
-                      response.status_code, response.content)
+    logging.info("Inviata la timbratura %s. Response code=%d, response content = %s", stampingJson,
+                 response.status_code, response.content)
 
-        return response
+    return response
 
 
 if __name__ == "__main__":
@@ -95,8 +92,7 @@ Gli attuali parametri di configurazione sono:
 
     stampingImporter = StampingImporter()
     stamping = stampingImporter._parseLine(line)
-    stampingSender = StampingSender()
-    response = stampingSender.send(stamping)
+    response = sendStamping(stamping)
     if (response.status_code == 200):
         print("Timbratura inviata correttamente")
     else:
