@@ -130,6 +130,11 @@ sed -i 's#{{BR_PORT}}#'"${BR_PORT}"'#' /client/epas_client/config.py
 sed -i 's#{{BR_USER}}#'"${BR_USER}"'#' /client/epas_client/config.py
 sed -i 's#{{BR_PSW}}#'"${BR_PSW}"'#' /client/epas_client/config.py
 
+sed -i 's#{{METRICS_ENABLED}}#'"${METRICS_ENABLED}"'#' /client/epas_client/config.py
+sed -i 's#{{METRICS_PUSHGATEWAY_URL}}#'"${METRICS_PUSHGATEWAY_URL}"'#' /client/epas_client/config.py
+sed -i 's#{{METRICS_PUSHGATEWAY_USER}}#'"${METRICS_PUSHGATEWAY_USER}"'#' /client/epas_client/config.py
+sed -i 's#{{METRICS_PUSHGATEWAY_PASSWORD}}#'"${METRICS_PUSHGATEWAY_PASSWORD}"'#' /client/epas_client/config.py
+
 cp /client/docker_conf/executeClient.sh /client/
 chmod +x /client/executeClient.sh
 

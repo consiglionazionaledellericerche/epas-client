@@ -199,9 +199,9 @@ class StampingImporter:
         
         #Impostazione delle metriche Prometheus
         STAMPINGS_SENT.set(len(stampings))
-        BAD_STAMPINGS.set(bad_stampings)
-        PARSING_ERRORS.set(parsing_errors)
-        
+        BAD_STAMPINGS.set(len(bad_stampings))
+        PARSING_ERRORS.set(len(parsing_errors))
+
         return bad_stampings, parsing_errors
 
     @staticmethod
