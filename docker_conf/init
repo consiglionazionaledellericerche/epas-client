@@ -45,6 +45,7 @@ if [ "${METRICS_ENABLED}" == "True"] && [ -z "${METRICS_PUSHGATEWAY_URL}" ]; the
     echo "ERROR: "
     echo "Per favore specifica l'url del pushgateway a cui inviare le metriche tramite il parametro METRCS_PUSHGATEWAY_URL"
     exit 1
+fi
 
 STAMPINGS_SERVER_PROTOCOL=${STAMPINGS_SERVER_PROTOCOL:-smartclock}
 STAMPINGS_ON_LOCAL_FOLDER=${STAMPINGS_ON_LOCAL_FOLDER:-False}

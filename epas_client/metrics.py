@@ -31,11 +31,11 @@
 from prometheus_client import CollectorRegistry, Summary, Histogram, Gauge, \
     Info
 from prometheus_client.exposition import basic_auth_handler
+from pathlib import Path
 
 from config import METRICS_ENABLED, METRICS_PUSHGATEWAY_URL, \
     METRICS_PUSHGATEWAY_USER, METRICS_PUSHGATEWAY_PASSWORD, \
     EPAS_REST_USERNAME, BADGE_READER_IP, FTP_SERVER_NAME
-from _curses import version
 
 #################### CONFIGURAZIONI METRICHE PROMETHEUS ########################
 
@@ -87,7 +87,8 @@ class PrometheusClient:
 
     @staticmethod
     def version():
-        with open('VERSION') as vf:
+        path = Path(__file__).parent / "../VERSION"
+        with path.open() as vf:
             version = vf.readline()        
         return str(version)
 
