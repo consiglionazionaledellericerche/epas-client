@@ -41,12 +41,12 @@ if [ -z "${SERVER_HOST}" ] || [ -z "${EPAS_CLIENT_USER}" ] || [ -z "${EPAS_CLIEN
     exit 1
 fi
 
-if [ "${METRICS_ENABLED}" == "True"] && [ -z "${METRICS_PUSHGATEWAY_URL}" ]; then
+if [ "${METRICS_ENABLED}" == "True" ] && [ -z "${METRICS_PUSHGATEWAY_URL}" ]; then
     echo "ERROR: "
-    echo "Per favore specifica l'url del pushgateway a cui inviare le metriche tramite il parametro METRCS_PUSHGATEWAY_URL"
+    echo "Per favore specifica l'url del pushgateway a cui inviare le metriche tramite il parametro METRICS_PUSHGATEWAY_URL"
     exit 1
-fi
 
+fi
 STAMPINGS_SERVER_PROTOCOL=${STAMPINGS_SERVER_PROTOCOL:-smartclock}
 STAMPINGS_ON_LOCAL_FOLDER=${STAMPINGS_ON_LOCAL_FOLDER:-False}
 
