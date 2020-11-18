@@ -8,3 +8,5 @@
 !*.sh
 !.env
 !LICENSE
+!VERSION
+!CHANGELOG.md

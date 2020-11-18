@@ -44,7 +44,7 @@ CLIENT_REGISTRY = CollectorRegistry()
 METRICS_LABEL_NAMES = ['instance', 'badgeReader', 'ftp_server']
 #METRICS_LABEL_VALUES = (EPAS_REST_USERNAME, BADGE_READER_IP, FTP_SERVER_NAME)
 
-_CLIENT_INFO = Info('client_version', 'Tipologia di client e protocollo utilizzato',
+_CLIENT_INFO = Info('epas_client_version', 'Tipologia di client e protocollo utilizzato',
                     METRICS_LABEL_NAMES, registry = CLIENT_REGISTRY)
 
 CLIENT_INFO = _CLIENT_INFO.labels(EPAS_REST_USERNAME, BADGE_READER_IP, FTP_SERVER_NAME)
