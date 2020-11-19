@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 metodo _send_ che ne era contenuto e che è stato rinominato in _sendStamping_
 - Rimossa classe client.StampingClient ed effettuato _push up_ del metodo
 process\_stamping\_files
+- Corretta apertura in scrittura del file da scaricare via FTP.
 
 ## [1.0.0] - 2020-11-10
 ### Added
