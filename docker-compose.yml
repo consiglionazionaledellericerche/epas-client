@@ -53,6 +53,15 @@ services:
       # Attenzione che se ci sono $ e la regex è scritta nel docker-compose allora vanno scritti com $$ 
       # - REGEX_STAMPING=${REGEX_STAMPING}          # Default: ^(?P<operazione>[0,E,U,T])(?P<tipo>\w{1})(?P<giornoSettimana>\d{1})(?P<matricolaFirma>\d{6})(?P<causale>\d{4})(?P<ora>\d{2})(?P<minuti>\d{2})(?P<secondi>\d{2})(?P<giorno>\d{2})(?P<mese>\d{2})(?P<anno>\d{2})(?P<lettore>\d{2})$
       
+      ################# PARAMETRI PER L'INVIO DELLE METRICHE AD UN PUSHGATEWAY ###################
+      
+      # - METRICS_ENABLED=${METRICS_ENABLED}                             # Default: False. Possibili valori {True, False}
+                                                                         # Attiva l'invio delle metriche di un client ad un Pushgateway Prometheus.
+
+      # - METRICS_PUSHGATEWAY_URL=${METRICS_PUSHGATEWAY_URL}             # Url del PushGateway a cui inviare le metriche
+      # - METRICS_PUSHGATEWAY_USER=${METRICS_PUSHGATEWAY_USER}           # Utente per l'autenticazione con il PushGateway
+      # - METRICS_PUSHGATEWAY_PASSWORD=${METRICS_PUSHGATEWAY_PASSWORD}   # Password per l'autenticazione con il PushGateway
+      
       ################### PARAMETRI GENERICI GENERALMENTE DA NON IMPOSTARE #######################
        
       # - OFFSET_ANNO_BADGE=       # Default: 2000

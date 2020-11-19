@@ -41,6 +41,12 @@ if [ -z "${SERVER_HOST}" ] || [ -z "${EPAS_CLIENT_USER}" ] || [ -z "${EPAS_CLIEN
     exit 1
 fi
 
+if [ "${METRICS_ENABLED}" == "True" ] && [ -z "${METRICS_PUSHGATEWAY_URL}" ]; then
+    echo "ERROR: "
+    echo "Per favore specifica l'url del pushgateway a cui inviare le metriche tramite il parametro METRICS_PUSHGATEWAY_URL"
+    exit 1
+
+fi
 STAMPINGS_SERVER_PROTOCOL=${STAMPINGS_SERVER_PROTOCOL:-smartclock}
 STAMPINGS_ON_LOCAL_FOLDER=${STAMPINGS_ON_LOCAL_FOLDER:-False}
 
@@ -84,6 +90,11 @@ DAYS_TO_DOWNLOAD=${DAYS_TO_DOWNLOAD:-10}
 MAX_BAD_STAMPING_DAYS=${MAX_BAD_STAMPING_DAYS:-10}
 SERVER_ERROR_CODES=${SERVER_ERROR_CODES:-401, 404, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509}
 
+METRICS_ENABLED=${METRICS_ENABLED:-False}
+METRICS_PUSHGATEWAY_URL=${METRICS_PUSHGATEWAY_URL}
+METRICS_PUSHGATEWAY_USER=${METRICS_PUSHGATEWAY_USER}
+METRICS_PUSHGATEWAY_PASSWORD=${METRICS_PUSHGATEWAY_PASSWORD}
+
 cp /client/docker_conf/config.py /client/epas_client/
 
 sed -i 's#{{MAX_THREADS}}#'"${MAX_THREADS}"'#' /client/epas_client/config.py
@@ -118,6 +129,11 @@ sed -i 's#{{BR_IP}}#'"${BR_IP}"'#' /client/epas_client/config.py
 sed -i 's#{{BR_PORT}}#'"${BR_PORT}"'#' /client/epas_client/config.py
 sed -i 's#{{BR_USER}}#'"${BR_USER}"'#' /client/epas_client/config.py
 sed -i 's#{{BR_PSW}}#'"${BR_PSW}"'#' /client/epas_client/config.py
+
+sed -i 's#{{METRICS_ENABLED}}#'"${METRICS_ENABLED}"'#' /client/epas_client/config.py
+sed -i 's#{{METRICS_PUSHGATEWAY_URL}}#'"${METRICS_PUSHGATEWAY_URL}"'#' /client/epas_client/config.py
+sed -i 's#{{METRICS_PUSHGATEWAY_USER}}#'"${METRICS_PUSHGATEWAY_USER}"'#' /client/epas_client/config.py
+sed -i 's#{{METRICS_PUSHGATEWAY_PASSWORD}}#'"${METRICS_PUSHGATEWAY_PASSWORD}"'#' /client/epas_client/config.py
 
 cp /client/docker_conf/executeClient.sh /client/
 chmod +x /client/executeClient.sh

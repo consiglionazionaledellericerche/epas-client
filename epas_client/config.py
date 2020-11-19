@@ -25,7 +25,7 @@
 # al client di acquisizione delle timbrature.                                 #
 #                                                                             #
 # Author: Cristian Lucchesi <cristian.lucchesi@iit.cnr.it>                    #
-# Last Modified: 2020-11-05 19:07                                             #
+# Last Modified: 2020-11-17 19:07                                             #
 ###############################################################################
 
 #from multiprocessing.connection import CONNECTION_TIMEOUT
@@ -223,3 +223,12 @@ BADGE_READER_IP = '127.0.0.1'
 BADGE_READER_PORT = '21'
 BADGE_READER_USER = 'epas.client'
 BADGE_READER_PSW = 'client.epas'
+
+###############################################################################
+# Parametri di configurazione per l'invio delle metriche ad un pushgateway    #
+###############################################################################
+
+METRICS_ENABLED = True
+METRICS_PUSHGATEWAY_URL="https://pushgateway.tools.iit.cnr.it"
+METRICS_PUSHGATEWAY_USER="epas-client"
+METRICS_PUSHGATEWAY_PASSWORD=""

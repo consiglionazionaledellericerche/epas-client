@@ -86,7 +86,8 @@ class FTPDownloader:
         """
         Scarica via FTP il file richiesto come parametro e lo mette nella "downloadDir"
         """
-        self.ftp.retrbinary("RETR %s" % (file_name,), open("%s/%s" % (STAMPINGS_DIR, file_name), 'wa').write)
+        with open("%s/%s" % (STAMPINGS_DIR, file_name), 'wb') as f:
+            self.ftp.retrbinary("RETR %s" % (file_name,), f.write)
         logging.info("Scaricato file %s", file_name)
 
     def check_new_stamping_files(self):

@@ -25,7 +25,7 @@
 # ed inviarlo all'applicazione "Epas".                                        #
 #                                                                             #
 # Author: Cristian Lucchesi <cristian.lucchesi@iit.cnr.it>                    #
-# Last Modified: 2013-05-10 12:49                                             #
+# Last Modified: 2020-11-17 19:32                                             #
 #                                                                             #
 # La REGEX_STAMPING rappresenta il formato della timbratura                   #
 #                                                                             #
@@ -90,10 +90,12 @@ from config import MAPPING_CAUSALI_CLIENT_SERVER, OFFSET_ANNO_BADGE, \
     MAPPING_OPERAZIONE_CLIENT_SERVER
 
 from stamping import Stamping
-from stampingSender import StampingSender
+from stampingSender import sendStamping
 
 # ATTENZIONE: formato della timbratura impostato in configurazione.
 stampingRegex = re.compile(REGEX_STAMPING)
+
+from metrics import BAD_STAMPINGS, PARSING_ERRORS, STAMPINGS_SENT
 
 class StampingParsingException(Exception):
     """
@@ -138,7 +140,7 @@ class SendWorker(Thread):
                 else:
                     try:
 
-                        response = StampingSender.send(stamp)
+                        response = sendStamping(stamp)
 
                         if response is None:  # Caso di errore di connessione al server
                             logging.debug("Timbratura non inserita in ePas: %s", line)
@@ -194,6 +196,11 @@ class StampingImporter:
             worker.start()
 
         queue.join()
+        
+        #Impostazione delle metriche Prometheus
+        STAMPINGS_SENT.set(len(stampings))
+        BAD_STAMPINGS.set(len(bad_stampings))
+        PARSING_ERRORS.set(len(parsing_errors))
 
         return bad_stampings, parsing_errors
 

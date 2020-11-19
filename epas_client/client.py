@@ -26,7 +26,7 @@
 # ePAS che gestisce le  presenze del personale.                               #
 #                                                                             #
 # Author: Cristian Lucchesi <cristian.lucchesi@iit.cnr.it>                    #
-# Last Modified: 2020-11-04 10:12                                             #
+# Last Modified: 2020-11-17 19:34                                             #
 ###############################################################################
 
 import logging
@@ -36,18 +36,16 @@ from ftpDownloader import FTPDownloader
 from sftpDownloader import SFTPDownloader
 from localFolderManager import LocalFolderManager
 from smartclockManager import SmartClockManager
-
-from config import PARSING_ERROR_FILE, BAD_STAMPINGS_FILE, DATA_DIR
+from fileUtils import FileUtils
+from lock import lock
+from epasClient import EpasClient
 
 #Quando questa configurazione è true viene ignorata la parte 
 # STAMPINGS_SERVER_PROTOCOL
 from config import STAMPINGS_ON_LOCAL_FOLDER
 
-from config import STAMPINGS_SERVER_PROTOCOL
-
-from fileUtils import FileUtils
-from lock import lock
-from epasClient import EpasClient
+from config import STAMPINGS_SERVER_PROTOCOL, METRICS_ENABLED
+from config import PARSING_ERROR_FILE, BAD_STAMPINGS_FILE, DATA_DIR
 
 bad_stampings_path = os.path.join(DATA_DIR, BAD_STAMPINGS_FILE)
 parsing_errors_path = os.path.join(DATA_DIR, PARSING_ERROR_FILE)
@@ -55,35 +53,35 @@ parsing_errors_path = os.path.join(DATA_DIR, PARSING_ERROR_FILE)
 # Comando per effettuare l'invio solo delle bad stampings
 BAD_STAMPINGS_COMMAND = '-b'
 
+from metrics import JOB_TIME, PrometheusClient
 
-class StampingClient:
+@JOB_TIME.time()
+def process_stamping_files():
     """
     Client per il sistema di rilevazione delle presenze presenti su file.
     I file con le timbrature possono essere in locale, in ftp o in sftp.
-    Si occupa di elaborare i file presenti in "dataDir" e di spedire le timbrature
-    via HTTP/Restful al sistema di rilevazione delle presenze.
+    Si occupa di elaborare i file presenti in "dataDir" e di spedire le 
+    timbrature via HTTP/Restful al sistema di rilevazione delle presenze.
     """
-
-    @staticmethod
-    def process_stamping_files():
         
-        logging.info("@@ Invio timbrature @@")
-        if STAMPINGS_ON_LOCAL_FOLDER or STAMPINGS_SERVER_PROTOCOL == "local":
-            manager = LocalFolderManager()
-            manager.check_new_stamping_files()
-        elif STAMPINGS_SERVER_PROTOCOL == "sftp":
-            manager = SFTPDownloader()
-            manager.check_new_stamping_files()
-            manager.close()            
-        elif STAMPINGS_SERVER_PROTOCOL == "ftp":
-            ftpDownloader = FTPDownloader()
-            ftpDownloader.check_new_stamping_files()
-        elif STAMPINGS_SERVER_PROTOCOL == "smartclock":            
-            last_stamping, last_stampingdate = SmartClockManager.downloadstampings()
-            if last_stamping is not None:
-                FileUtils.save_last_request(last_stamping, last_stampingdate)
-            SmartClockManager.process_stamping_files()
+    logging.info("@@ Invio timbrature @@")
+    if STAMPINGS_ON_LOCAL_FOLDER or STAMPINGS_SERVER_PROTOCOL == "local":
+        manager = LocalFolderManager()
+        manager.check_new_stamping_files()
+    elif STAMPINGS_SERVER_PROTOCOL == "sftp":
+        manager = SFTPDownloader()
+        manager.check_new_stamping_files()
+        manager.close()            
+    elif STAMPINGS_SERVER_PROTOCOL == "ftp":
+        ftpDownloader = FTPDownloader()
+        ftpDownloader.check_new_stamping_files()
+    elif STAMPINGS_SERVER_PROTOCOL == "smartclock":            
+        last_stamping, last_stampingdate = SmartClockManager.downloadstampings()
+        if last_stamping is not None:
+            FileUtils.save_last_request(last_stamping, last_stampingdate)
+        SmartClockManager.process_stamping_files()
 
+  
 if __name__ == "__main__":
     from config import LOGGING
     import timeit
@@ -105,8 +103,8 @@ if __name__ == "__main__":
     if BAD_STAMPINGS_COMMAND in sys.argv:
         EpasClient.send_bad_stampings()
     else:
-        StampingClient.process_stamping_files()
-        
+        process_stamping_files()
+
     LOG_END = '#########################    ESECUZIONE CLIENT COMPLETATA IN  %02dmin e %02dsec   ############################'
 
     end = timeit.default_timer()
@@ -117,3 +115,6 @@ if __name__ == "__main__":
     m, s = divmod(seconds, 60)
 
     logging.info(LOG_END, m, s)
+    
+    if METRICS_ENABLED:
+        PrometheusClient.push_metrics()
