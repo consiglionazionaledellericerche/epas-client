@@ -106,8 +106,8 @@ class PrometheusClient:
                           'version' : PrometheusClient.version()})
 
         if METRICS_PUSHGATEWAY_USER and METRICS_PUSHGATEWAY_PASSWORD:
-            push_to_gateway(METRICS_PUSHGATEWAY_URL, job="epas-clients", 
+            push_to_gateway(METRICS_PUSHGATEWAY_URL, job=f"epas-client-{EPAS_REST_USERNAME}", 
                             registry=CLIENT_REGISTRY, handler=PrometheusClient.my_auth_handler)
         else:
-            push_to_gateway(METRICS_PUSHGATEWAY_URL, job="epas-clients", 
+            push_to_gateway(METRICS_PUSHGATEWAY_URL, job=f"epas-client-{EPAS_REST_USERNAME}", 
                             registry=CLIENT_REGISTRY)
