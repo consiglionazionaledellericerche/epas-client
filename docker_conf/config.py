@@ -195,7 +195,7 @@ BADGE_READER_PSW = "{{BR_PSW}}"
 # Parametri di configurazione per l'invio delle metriche ad un pushgateway    #
 ###############################################################################
 
-METRICS_ENABLED = "{{METRICS_ENABLED}}"
+METRICS_ENABLED = {{METRICS_ENABLED}}
 METRICS_PUSHGATEWAY_URL = "{{METRICS_PUSHGATEWAY_URL}}"
 METRICS_PUSHGATEWAY_USER= "{{METRICS_PUSHGATEWAY_USER}}"
 METRICS_PUSHGATEWAY_PASSWORD = "{{METRICS_PUSHGATEWAY_PASSWORD}}"
