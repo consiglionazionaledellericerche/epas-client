@@ -66,6 +66,7 @@ BR_USER=${BR_USER}
 BR_PSW=${BR_PASSWORD}
 
 OFFSET_ANNO_BADGE=${OFFSET_ANNO_BADGE:-2000}
+CHECK_SUCCESS_MSG=${CHECK_SUCCESS_MSG:-True}
 
 printf -v DEFAULT_REGEX "%q" "^(?P<operazione>[0,E,U,T])(?P<tipo>\w{1})(?P<giornoSettimana>\d{1})(?P<matricolaFirma>\d{9})(?P<causale>\d{4})(?P<ora>\d{2})(?P<minuti>\d{2})(?P<secondi>\d{2})(?P<giorno>\d{2})(?P<mese>\d{2})(?P<anno>\d{2})(?P<lettore>\d{2})$"
 REGEX_STAMPING=${REGEX_STAMPING:-$DEFAULT_REGEX}
@@ -103,6 +104,8 @@ sed -i 's#{{MAX_BAD_STAMPING_DAYS}}#'"${MAX_BAD_STAMPING_DAYS}"'#' /client/epas_
 sed -i 's#{{LOG_LEVEL}}#'"${LOG_LEVEL}"'#' /client/epas_client/config.py
 
 sed -i 's#{{OFFSET_ANNO_BADGE}}#'"${OFFSET_ANNO_BADGE}"'#' /client/epas_client/config.py
+sed -i 's#{{CHECK_SUCCESS_MSG}}#'"${CHECK_SUCCESS_MSG}"'#' /client/epas_client/config.py
+
 sed -i 's#{{SERVER_HOST}}#'"${SERVER_HOST}"'#' /client/epas_client/config.py
 sed -i 's#{{SERVER_PORT}}#'"${SERVER_PORT}"'#' /client/epas_client/config.py
 sed -i 's#{{SERVER_PROTOCOL}}#'"${SERVER_PROTOCOL}"'#' /client/epas_client/config.py

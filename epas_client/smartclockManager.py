@@ -58,9 +58,9 @@ from config import BADGE_READER_IP, BADGE_READER_PORT, BADGE_READER_USER, \
     BADGE_READER_PSW, DAYS_TO_DOWNLOAD, FTP_CONNECTION_TIMEOUT, WAIT_SECONDS, \
     STAMPING_FILTER_COMMAND, STAMPINGS_FILE, COMMAND_FILE, LOG_FILE, \
     F4_COMMAND_DATA_FORMAT, SUCCESS_MSG, DATA_DIR, BAD_STAMPINGS_FILE, \
-    PARSING_ERROR_FILE
+    PARSING_ERROR_FILE, CHECK_SUCCESS_MSG
 
-from config import BASE_DIR, STAMPINGS_FILE_FORMAT, STAMPINGS_DIR
+from config import BASE_DIR, STAMPINGS_FILE_FORMAT, STAMPINGS_DIR 
 from stampingImporter import StampingImporter
 from fileUtils import FileUtils
 
@@ -143,16 +143,19 @@ class SmartClockManager:
 
             # Leggo la prima riga contenente la risposta al comando inviato
             if os.path.exists(log_file):
-                with open(log_file, 'r') as f:
-                    first_line = f.readline().strip()
+                if CHECK_SUCCESS_MSG:
+                    with open(log_file, 'r') as f:
+                        first_line = f.readline().strip()
 
-                response = re.search("Rx\d{4}", first_line).group()
-                # Verifico che il messaggio del lettore sia quello di successo
-                if response != SUCCESS_MSG:
-                    logging.error("Risposta del lettore inattesa, nessuna timbratura scaricata: %s", response)
-                    return None, None
+                    response = re.search("Rx\d{4}", first_line).group()
+                    # Verifico che il messaggio del lettore sia quello di successo
+                    if response != SUCCESS_MSG:
+                        logging.error("Risposta del lettore inattesa, nessuna timbratura scaricata: %s", response)
+                        return None, None
 
-                logging.info("Risposta del lettore al comando %s: %s", STAMPING_FILTER_COMMAND, response)
+                    logging.info("Risposta del lettore al comando %s: %s", STAMPING_FILTER_COMMAND, response)
+                else:
+                    logging.debug("Ignorata verifica del SUCCESS_MSG del lettore, parametro CHECK_SUCCESS_MSG != True")
 
                 # Eseguo il download del file LTCOM.TRN contenente le timbrature
                 get_stamp = ftp.retrbinary('RETR ' + STAMPINGS_FILE, open(stamping_file, 'wb+').write)

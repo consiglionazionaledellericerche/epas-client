@@ -170,6 +170,8 @@ F4_COMMAND_DATA_FORMAT = '%d/%m/%y/%H/%M/%S'
 RESPONSE_REG = 'Rx\d{4}'
 SUCCESS_MSG = 'Rx0000'
 
+CHECK_SUCCESS_MSG = True
+
 ############################################################################
 # Parametri di configurazione del server ePAS dove inviare le timbrature   #
 ############################################################################

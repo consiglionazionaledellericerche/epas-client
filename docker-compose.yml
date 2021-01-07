@@ -64,15 +64,16 @@ services:
       
       ################### PARAMETRI GENERICI GENERALMENTE DA NON IMPOSTARE #######################
        
-      # - OFFSET_ANNO_BADGE=       # Default: 2000
-      # - LOG_LEVEL=               # Default: INFO
-      # - MAX_THREADS=             # Default: 1
+      # - OFFSET_ANNO_BADGE=                      # Default: 2000
+      # - CHECK_SUCCESS_MSG=${CHECK_SUCCESS_MSG}  # Default: True
+      # - LOG_LEVEL=                              # Default: INFO
+      # - MAX_THREADS=                            # Default: 1
       # - CRON=* * * * *           # Default: ogni 15 minuti dalle 6 alle 23. utilizzare il formato richiesto dal crontab. Riferimenti -> https://en.wikipedia.org/wiki/Cron#Examples
       # - CRON_RANDOM_SLEEP=       # Default: 180. Secondi di sleep random massimo prima di lanciare il client per le timbrature. 
       # - PROBLEMS_CRON=           # Default: all'una di notte. Invio di tutte le timbrature non inviate correttamente a epas (badge non trovato o altri problemi)
       # - MAX_BAD_STAMPING_DAYS=   # Default: 10. Tutte le timbrature con problemi, più vecchie di questo numero di giorni dal momento dell'esecuzione, vengono buttate via
       # - SERVER_ERROR_CODES=      # Default: 401, 404, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509. Specificare i valori separati da virgola che comportano un reinvio delle timbrature
-      # - MAPPING_OPERAZIONE_CLIENT_SERVER=   # Default: {'E':'0','U':'1'}
-      # - MAPPING_CAUSALI_CLIENT_SERVER=      # Default: {'0000': None, '0001': 'motiviDiServizio', '0007': 'pausaPranzo'}
+      # - MAPPING_OPERAZIONE_CLIENT_SERVER=       # Default: {'E':'0','U':'1'}
+      # - MAPPING_CAUSALI_CLIENT_SERVER=          # Default: {'0000': None, '0001': 'motiviDiServizio', '0007': 'pausaPranzo'}
 
     restart: unless-stopped
