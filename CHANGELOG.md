@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2021-01-14
+### Changed
+- Modificata immagine docker di base da python:3-alpine a python:3-slim per
+ridurre i tempi di build e la dimensione dell'immagine. 
+
 ## [1.1.1] - 2021-01-07
 ### Added
 - Aggiunto parametro CHECK_SUCCESS_MSG per compatibilità con vecchi lettori

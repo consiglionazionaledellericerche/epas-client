@@ -1,8 +1,6 @@
-FROM python:3-alpine
+FROM python:3-slim
 
 LABEL maintainer="Cristian Lucchesi <cristian.lucchesi@iit.cnr.it>"
-
-RUN apk --update add bash make gcc python3-dev musl-dev libffi-dev openssl-dev
 
 WORKDIR /client
 
