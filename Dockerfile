@@ -2,6 +2,7 @@ FROM python:3-slim
 
 LABEL maintainer="Cristian Lucchesi <cristian.lucchesi@iit.cnr.it>"
 
+RUN apt-get update && apt-get -y install cron && apt-get clean
 WORKDIR /client
 
 ADD / .
