@@ -25,11 +25,10 @@
 #              timbratura                                                       #
 #                                                                               #
 # Author: Cristian Lucchesi <cristian.lucchesi@iit.cnr.it>                      #
-# Last Modified: 2013-05-09 14:58                                               #
+# Last Modified: 2021-01-29 17:28                                               #
 #################################################################################
 
 from config import TIPOLOGIE_BADGE_DA_IGNORARE
-
 
 class Stamping:
     """
@@ -71,14 +70,21 @@ class Stamping:
                        or self.secondi is None or not type(self.secondi) == int \
                        or self.secondi < 0 or self.secondi > 60)
 
-        # logging.debug("Is valid = %s. Stamping = %s", isNotValid, self)
         return isValid
 
     def __str__(self):
         return """operazione: %s, tipo: %s, giorno settimana: %s, numero badge: %s, causale: %s
 ora: %s, minuti: %s, secondi: %s, giorno: %s, mese: %s, anno: %s 
-lettore: %s""" % (self.operazione, self.tipo, self.giornoSettimana,
-                  self.matricolaFirma, self.causale,
-                  self.ora, self.minuti, self.secondi,
-                  self.giorno, self.mese, self.anno,
-                  self.lettore)
+lettore: %s""" % (self.operazione if hasattr(self, "operazione") else None, 
+                  self.tipo if hasattr(self, "tipo") else None, 
+                  self.giornoSettimana if hasattr(self, "giornoSettimana") else None,
+                  self.matricolaFirma if hasattr(self, "matricolaFirma") else None, 
+                  self.causale if hasattr(self, "causale") else None,
+                  self.ora if hasattr(self, "ora") else None, 
+                  self.minuti if hasattr(self, "minuti") else None, 
+                  self.secondi if hasattr(self, "secondi") else None,
+                  self.giorno if hasattr(self, "giorno") else None, 
+                  self.mese if hasattr(self, "mese") else None, 
+                  self.anno if hasattr(self, "anno") else None,
+                  self.lettore if hasattr(self, "lettore") else None
+                  )
