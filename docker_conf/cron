@@ -1,3 +1,3 @@
-{{CRON}} /usr/local/bin/python -c "import random; import time; time.sleep(random.randint(0,{{CRON_RANDOM_SLEEP}}))" && /client/executeClient.sh >/dev/null 2>&1
-{{PROBLEMS_CRON}} /usr/local/bin/python -c "import random; import time; time.sleep(random.randint(0,{{CRON_RANDOM_SLEEP}}))" && /client/badStampings.sh >/dev/null 2>&1
+{{CRON}} python -c "import random; import time; time.sleep(random.randint(0,{{CRON_RANDOM_SLEEP}}))" && /client/executeClient.sh >/dev/null 2>&1
+{{PROBLEMS_CRON}} python -c "import random; import time; time.sleep(random.randint(0,{{CRON_RANDOM_SLEEP}}))" && /client/badStampings.sh >/dev/null 2>&1
 0 0 * * * /client/cleanLogs.sh >/dev/null 2>&1

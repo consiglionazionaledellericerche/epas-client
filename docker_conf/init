@@ -154,6 +154,6 @@ sed -i 's#{{PROBLEMS_CRON}}#'"${PROBLEMS_CRON}"'#' /tmp/cron
 sed -i 's#{{CRON_RANDOM_SLEEP}}#'"${CRON_RANDOM_SLEEP}"'#' /tmp/cron
 
 crontab /tmp/cron
-cron -f
+crond -f
 
 exit 0
