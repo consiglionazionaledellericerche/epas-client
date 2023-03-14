@@ -26,7 +26,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="epas-client",
-    version="1.0.0",
+    version="1.3.0",
     author="Team di ePAS - IIT/CNR",
     author_email="epas@iit.cnr.it",
     description="ePAS client per prelevamento timbratute da file " + 
