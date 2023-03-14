@@ -1,4 +1,4 @@
-requests~=2.24.0
-cryptography~=3.2.1
+requests~=2.28.2
+cryptography~=39.0.2
 paramiko
 prometheus_client
