@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-#         Copyright (C) 2020  Consiglio Nazionale delle Ricerche              #
+#         Copyright (C) 2024  Consiglio Nazionale delle Ricerche              #
 #                                                                             #
 #   This program is free software: you can redistribute it and/or modify      #
 #   it under the terms of the GNU Affero General Public License as            #
@@ -25,7 +25,7 @@
 # da un ftp server remoto              .                                      #
 #                                                                             #
 # Author: Cristian Lucchesi <cristian.lucchesi@iit.cnr.it>                    #
-# Last Modified: 2020-11-05 11:37                                             #
+# Last Modified: 2024-04-16 18:25                                             #
 ###############################################################################
 
 ###############################################################################
@@ -46,7 +46,7 @@ from config import FTP_SERVER_NAME, FTP_SERVER_PORT, FTP_USERNAME,  \
     FTP_PASSWORD, FTP_SERVER_DIR, FTP_FILE_PREFIX, FTP_FILE_SUFFIX, \
     FTP_CONNECTION_TIMEOUT
     
-from stampingImporter import StampingImporter  
+from stampingImporter import StampingImporter, STAMPINGS_ALREADY_SENT_EXTENSION, StampingParsingException
 from fileUtils import FileUtils
 
 from config import STAMPINGS_DIR, DATA_DIR, BAD_STAMPINGS_FILE, \
@@ -146,11 +146,9 @@ class FTPDownloader:
         """
         @param file_name: il path assoluto del file da cui prelevare la lista delle timbrature
         @param from_line: il numero di riga da cui prelevare la timbratura
-         
         Restituisce la liste della timbrature prelevate dal file passato a partire
         dalla lina indicata.
         """
-        
         f = open(file_name, "r")
         logging.info("Processo il file %s per estrarne le timbrature", file_name)
 
@@ -168,7 +166,27 @@ class FTPDownloader:
             else:
                 lines = lines[from_line-1:]
         return lines, number_of_lines
-    
+
+    def _already_sent_stampings(self, filename):
+        """
+        Costruisce un dizionario che ha come chiave la matricola della persona e come valore
+        la lista delle timbrature già inviate per quella persona.
+        @param filename: il nome del file da utilizzare per cercare le timbrature già inviate
+        """
+        stampingImporter = StampingImporter()
+        rawStampings = stampingImporter.stampingsAlreadySent(filename)
+        stampings = {}
+        for rawStamping in rawStampings:
+            try:
+                stamping = stampingImporter._parseLine(rawStamping)
+                if stamping.matricolaFirma in stampings:
+                    stampings[stamping.matricolaFirma].append(stamping)
+                else:
+                     stampings[stamping.matricolaFirma] = [stamping]
+            except StampingParsingException:
+                continue
+        return stampings
+
     def _retrieve_and_process_file(self, file_name, from_line=None):
         """
         Scarica il file via FTP e lo importa in Epas.
@@ -179,18 +197,24 @@ class FTPDownloader:
         file_path = "%s/%s" % (STAMPINGS_DIR, file_name)
         
         lines, last_line_processed = self._raw_stampings(file_path, from_line)
-        
-        stamping_importer = StampingImporter()
-        bad_stampings, parsing_errors = stamping_importer.sendStampingsOnEpas(lines)
-        
+
+        stampingImporter = StampingImporter()
+        alreadySentRawStampings = stampingImporter.stampingsAlreadySent(file_name)
+        lines = [line for line in lines if line not in alreadySentRawStampings]
+
+        bad_stampings, parsing_errors = \
+            stampingImporter.sendStampingsOnEpas(
+                lines, alreadySentStampings = self._already_sent_stampings(file_name),
+                filename = file_name)
+
         if len(bad_stampings) > 0:
             # Rimuove eventuali duplicati
             bad_stampings = set(bad_stampings)
             FileUtils.storestamping(self.bad_stampings_path, bad_stampings)
 
         if len(parsing_errors) > 0:
-            FileUtils.storestamping(self.parsing_errors_path, parsing_errors)        
-            
+            FileUtils.storestamping(self.parsing_errors_path, parsing_errors)
+
         file_size = os.path.getsize(file_path)
         self.fileInfoManager.save(file_name, file_size, last_line_processed)
 
@@ -229,7 +253,7 @@ class FTPDownloader:
         """
         Restituisce la lista dei nomi di file di timbrature presenti in FTP
         """
-        try:            
+        try:
             file_names = self.ftp.nlst()
         except:
             self.ftp = FTP(FTP_SERVER_NAME)
@@ -248,8 +272,7 @@ if __name__ == "__main__":
     print(file_names)
     stamping_file = file_names[-1]
     ftp._retrieve_file(stamping_file)
-    
+
     file_path = "%s/%s" % (STAMPINGS_DIR, stamping_file)
     lines, last_line_processed = ftp._raw_stampings(file_path)
-    ftp.check_new_stamping_files()
-    
+    #ftp.check_new_stamping_files()

@@ -89,6 +89,9 @@ SERVER_ERROR_CODES = [401, 404, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509
 
 #Version Smartclock
 REGEX_STAMPING = "^(?P<operazione>[0,E,U,T])(?P<tipo>\w{1})(?P<giornoSettimana>\d{1})(?P<matricolaFirma>\d{6})(?P<causale>\d{4})(?P<ora>\d{2})(?P<minuti>\d{2})(?P<secondi>\d{2})(?P<giorno>\d{2})(?P<mese>\d{2})(?P<anno>\d{2})(?P<lettore>\d{2})$"
+#Versione Area di Pisa
+#REGEX_STAMPING = \
+#    "^(?P<operazione>\d{2})(?P<lettore>\d{2})[!|\s](?P<causale>\d{4})\w(?P<matricolaFirma>[\w,\s,.]{17})(?P<anno>\d\d)(?P<mese>\d\d)(?P<giorno>\d\d)(?P<ora>\d\d)(?P<minuti>\d\d)$"
 #Versione Humanitas
 #REGEX_STAMPING = "^(?P<matricolaFirma>\d{6})(?P<giorno>\d{2})(?P<mese>\d{2})(?P<anno>\d{4})(?P<operazione>\w{1})(?P<ora>\d{2})(?P<minuti>\d{2})$"
 #Version Area di Bari
@@ -137,10 +140,15 @@ TIPOLOGIE_BADGE_DA_IGNORARE = []
 
 MAPPING_CAUSALI_CLIENT_SERVER = {
     '0000': None,  # Quando il campo causale è 0000 vuol dire che non è stata selezionata nessuna causale
+    '0001': 'motiviDiServizio',
     '0002': 'motiviDiServizio',
     '0004': 'motiviDiServizio',
     '0003': 'pausaPranzo',
 }
+
+FIX_CAUSALE_PAUSA_PRANZO = False
+CAUSALE_PAUSA_PRANZO_MIN_HOUR = 12
+CAUSALE_PAUSA_PRANZO_MAX_HOUR = 15
 
 # Mapping tra il campo operazione ricevuto dal client e quello del server
 MAPPING_OPERAZIONE_CLIENT_SERVER = {
@@ -230,7 +238,7 @@ BADGE_READER_PSW = 'client.epas'
 # Parametri di configurazione per l'invio delle metriche ad un pushgateway    #
 ###############################################################################
 
-METRICS_ENABLED = True
+METRICS_ENABLED = False
 METRICS_PUSHGATEWAY_URL="https://pushgateway.tools.iit.cnr.it"
 METRICS_PUSHGATEWAY_USER="epas-client"
 METRICS_PUSHGATEWAY_PASSWORD=""

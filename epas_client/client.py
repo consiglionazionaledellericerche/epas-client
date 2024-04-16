@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-#         Copyright (C) 2020  Consiglio Nazionale delle Ricerche              #
+#         Copyright (C) 2024  Consiglio Nazionale delle Ricerche              #
 #                                                                             #
 #   This program is free software: you can redistribute it and/or modify      #
 #   it under the terms of the GNU Affero General Public License as            #
@@ -71,11 +71,11 @@ def process_stamping_files():
     elif STAMPINGS_SERVER_PROTOCOL == "sftp":
         manager = SFTPDownloader()
         manager.check_new_stamping_files()
-        manager.close()            
+        manager.close()
     elif STAMPINGS_SERVER_PROTOCOL == "ftp":
         ftpDownloader = FTPDownloader()
         ftpDownloader.check_new_stamping_files()
-    elif STAMPINGS_SERVER_PROTOCOL == "smartclock":            
+    elif STAMPINGS_SERVER_PROTOCOL == "smartclock":
         last_stamping, last_stampingdate = SmartClockManager.downloadstampings()
         if last_stamping is not None:
             FileUtils.save_last_request(last_stamping, last_stampingdate)

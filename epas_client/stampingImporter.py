@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-#         Copyright (C) 2020  Consiglio Nazionale delle Ricerche              #
+#         Copyright (C) 2024  Consiglio Nazionale delle Ricerche              #
 #                                                                             #
 #   This program is free software: you can redistribute it and/or modify      #
 #   it under the terms of the GNU Affero General Public License as            #
@@ -25,7 +25,7 @@
 # ed inviarlo all'applicazione "Epas".                                        #
 #                                                                             #
 # Author: Cristian Lucchesi <cristian.lucchesi@iit.cnr.it>                    #
-# Last Modified: 2020-11-17 19:32                                             #
+# Last Modified: 2024-04-16 17:37                                             #
 #                                                                             #
 # La REGEX_STAMPING rappresenta il formato della timbratura                   #
 #                                                                             #
@@ -82,15 +82,20 @@
 
 import logging
 import re
+import os
 from queue import Queue, Empty
 from threading import Thread
 
 from config import MAPPING_CAUSALI_CLIENT_SERVER, OFFSET_ANNO_BADGE, \
     MAX_THREADS, SERVER_ERROR_CODES, REGEX_STAMPING, \
-    MAPPING_OPERAZIONE_CLIENT_SERVER
+    MAPPING_OPERAZIONE_CLIENT_SERVER, FIX_CAUSALE_PAUSA_PRANZO, \
+    STAMPINGS_DIR
 
 from stamping import Stamping
 from stampingSender import sendStamping
+from fixReason import fixStampingForMealBreak
+
+STAMPINGS_ALREADY_SENT_EXTENSION = ".sent"
 
 # ATTENZIONE: formato della timbratura impostato in configurazione.
 stampingRegex = re.compile(REGEX_STAMPING)
@@ -110,11 +115,13 @@ class StampingParsingException(Exception):
 
 
 class SendWorker(Thread):
-    def __init__(self, queue, badStampings, parsingErrors):
+    def __init__(self, queue, badStampings, parsingErrors, alreadySentStampings={}, filename=None):
         Thread.__init__(self)
         self.queue = queue
         self.badStampings = badStampings
         self.parsingErrors = parsingErrors
+        self.alreadySentStampings = alreadySentStampings
+        self.filename = filename
 
     def run(self):
         while not self.queue.empty():
@@ -139,7 +146,11 @@ class SendWorker(Thread):
                     logging.info("Ignorata timbratura line = %s. Timbratura = %s", line, stamp)
                 else:
                     try:
-
+                        if FIX_CAUSALE_PAUSA_PRANZO:
+                            if stamp.matricolaFirma in self.alreadySentStampings:
+                                stamp = fixStampingForMealBreak(stamp, self.alreadySentStampings[stamp.matricolaFirma])
+                            else:
+                                stamp = fixStampingForMealBreak(stamp, [])
                         response = sendStamping(stamp)
 
                         if response is None:  # Caso di errore di connessione al server
@@ -151,10 +162,17 @@ class SendWorker(Thread):
                             self.badStampings.append(line)
                         else:  # Invio OK
                             logging.debug("Timbratura inserita correttamente in ePas:  %s", line)
+                            if stamp.matricolaFirma in self.alreadySentStampings:
+                                self.alreadySentStampings[stamp.matricolaFirma].append(stamp)
+                            else:
+                                self.alreadySentStampings[stamp.matricolaFirma] = [stamp]
+                            if self.filename:
+                                StampingImporter.registerStampingSent(self.filename, line)
                     except Exception as e:
-                        logging.error("Eccezione nell'invio delle timbratura line = %s. " + 
+                        logging.error("Eccezione nell'invio della timbratura line = %s. " + 
                                       "Timbratura = %s. Inserita nelle badStampings. Eccezione = %s", line, stamp, e)
-                        self.badStampings.append(line)                        
+                        self.badStampings.append(line)
+                        raise e
             self.queue.task_done()
 
 
@@ -165,9 +183,38 @@ class StampingImporter:
     """
 
     @staticmethod
-    def sendStampingsOnEpas(stampings):
+    def registerStampingSent(filename, line):
+        """
+        Salva le timbrature inviate in un file per giorno.
+        """
+        logging.info("Salvo nel file %s la timbratura inviata %s", filename, line)
+        with open("%s/%s" % (STAMPINGS_DIR, filename + STAMPINGS_ALREADY_SENT_EXTENSION), 'a+') as f:
+            f.write(line + "\n")
+
+    @staticmethod
+    def stampingsAlreadySent(filename):
+        """
+        La lista delle timbrature già inviate per questo fileName
+        """
+        fileNameSent = "%s/%s" %(STAMPINGS_DIR, filename + STAMPINGS_ALREADY_SENT_EXTENSION)
+        if os.path.exists(fileNameSent):
+            f = open(fileNameSent, "r")
+            logging.info("Processo il file %s per estrarne le timbrature gia' inviate", fileNameSent)
+        else:
+            logging.info("Nessun file per le timbrature gia' inviate per %s", fileNameSent)
+            return []
+        
+        stampings = f.read().splitlines()
+        logging.info("Timbrature gia' inviate = %s", stampings)
+        #Questo metodo di lettura delle righe toglie anche gli \n di fine riga
+        return stampings
+
+    @staticmethod
+    def sendStampingsOnEpas(stampings, alreadySentStampings={}, filename=None):
         """
         @param stampings: lista delle righe prelevate dal file delle timbrature
+        @param alreadySentStampings: dizionario con le timbrature già inviate aggregate
+            con la chiava stamping.matricolaFirma
         @return una tupla contenente come primo valore la lista delle timbrature da re-inviare
             ad ePAS e come secondo elemento la lista degli errori di parsing.
             
@@ -189,7 +236,7 @@ class StampingImporter:
 
         # Crea n thread
         for x in range(MAX_THREADS):
-            worker = SendWorker(queue, bad_stampings, parsing_errors)
+            worker = SendWorker(queue, bad_stampings, parsing_errors, alreadySentStampings, filename)
             logging.debug(f"Avviato thread {x} per l'invio delle timbrature")
             # Setting daemon to True will let the main thread exit even though the workers are blocking
             worker.daemon = True
@@ -290,6 +337,6 @@ if __name__ == "__main__":
         level=logging.DEBUG)
 
     stampingImporter = StampingImporter()
-    line = "E11000092852000008341404011100"
+    line = "E11000092852008341404011100"
     stamping = stampingImporter._parseLine(line)
     print(stamping)

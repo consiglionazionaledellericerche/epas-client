@@ -58,7 +58,7 @@ OFFSET_ANNO_BADGE = {{OFFSET_ANNO_BADGE}}
 #perché nel file con le timbrature del giorno le nuove timbrature non vengono aggiunte
 #alla fine del file ma il file viene rigenerato con tutte le timbrature (precedenti + nuove)
 #in ordine sparso :-(
-SEND_ALL_STAMPINGS_EVERYTIME=False
+SEND_ALL_STAMPINGS_EVERYTIME={{SEND_ALL_STAMPINGS_EVERYTIME}}
 
 # Numero di thread da utilizzare per l'invio delle timbrature; Default 1
 MAX_THREADS = {{MAX_THREADS}}
@@ -121,6 +121,11 @@ MAPPING_OPERAZIONE_CLIENT_SERVER = {{MAPPING_OPERAZIONE_CLIENT_SERVER}}
 #File all'interno del quale vengono salvate le informazioni relative all'ultimo
 #file di timbrature processato dal client
 FILE_LAST_DOWNLOAD = "ultimo_file.txt"
+
+#
+FIX_CAUSALE_PAUSA_PRANZO = {{FIX_CAUSALE_PAUSA_PRANZO}}
+CAUSALE_PAUSA_PRANZO_MIN_HOUR = {{CAUSALE_PAUSA_PRANZO_MIN_HOUR}}
+CAUSALE_PAUSA_PRANZO_MAX_HOUR = {{CAUSALE_PAUSA_PRANZO_MAX_HOUR}}
 
 ###############################################################################
 # Parametri di configurazione standard da non modificare a meno di non        #

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ###############################################################################
-#         Copyright (C) 2020  Consiglio Nazionale delle Ricerche              #
+#         Copyright (C) 2024  Consiglio Nazionale delle Ricerche              #
 #                                                                             #
 #   This program is free software: you can redistribute it and/or modify      #
 #   it under the terms of the GNU Affero General Public License as            #
@@ -25,15 +25,37 @@
 #              timbratura                                                       #
 #                                                                               #
 # Author: Cristian Lucchesi <cristian.lucchesi@iit.cnr.it>                      #
-# Last Modified: 2021-01-29 17:28                                               #
+# Last Modified: 2024-04-16 12:18                                               #
 #################################################################################
 
 from config import TIPOLOGIE_BADGE_DA_IGNORARE
+from sqlalchemy.dialects import oracle
 
 class Stamping:
     """
     Classe contenitore per le informazioni relative ad una timbratura via Badge
     """
+
+    def __init__(self, matricolaFirma=None, operazione=None, 
+                 anno=None, mese=None, giorno=None, 
+                 ora=None, minuti=None, causale=None):
+        self.matricolaFirma = matricolaFirma
+        self.operazione = operazione
+        self.anno = anno
+        self.mese = mese
+        self.giorno = giorno
+        self.ora = ora
+        self.minuti = minuti
+        self.causale = causale
+
+    def isEntrance(self):
+        return hasattr(self, "operazione") and (self.operazione.endswith("0")  or self.operazione == "E")
+
+    def isExit(self):
+        return hasattr(self, "operazione") and (self.operazione.endswith("1") or self.operazione == "U")
+
+    def hasReason(self):
+        return hasattr(self, "causale") and self.causale != None and self.causale != ""
 
     def isToBeIgnored(self):
         """
@@ -44,7 +66,7 @@ class Stamping:
 
         return self.matricolaFirma is None or \
                self.matricolaFirma in TIPOLOGIE_BADGE_DA_IGNORARE or \
-               self.operazione not in ["0", "1"]
+               self.operazione not in ["0", "1", "00", "01"]
 
     def isValid(self):
         """
