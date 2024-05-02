@@ -69,7 +69,7 @@ CONNECTION_TIMEOUT=10
 SERVER_ERROR_CODES = [{{SERVER_ERROR_CODES}}]
 
 # Espressione regolare per eseguire il parsing delle timbrature
-REGEX_STAMPING = "{{REGEX_STAMPING}}"
+REGEX_STAMPING = r"{{REGEX_STAMPING}}"
 
 # File di log dove verranno riportate le operazioni fatte dal client
 LOG_FILE = LOG_DIR + '/client.log'
@@ -140,7 +140,7 @@ COMMAND_FILE = 'ltcom.com'
 LOG_FILE = 'ltcom.log'
 F4_COMMAND_DATA_FORMAT = '%d/%m/%y/%H/%M/%S'
 
-RESPONSE_REG = 'Rx\d{4}'
+RESPONSE_REG = r'Rx\d{4}'
 SUCCESS_MSG = 'Rx0000'
 CHECK_SUCCESS_MSG = {{CHECK_SUCCESS_MSG}}
 

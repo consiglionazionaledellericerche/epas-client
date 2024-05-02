@@ -48,7 +48,7 @@ class FileUtils:
         if os.path.exists(lastrequestfile):
             try:
                 config = ConfigParser()
-                config.readfp(open(lastrequestfile))
+                config.read_file(open(lastrequestfile))
                 laststamping = config.get(LAST_REQUEST_SECTION, LAST_STAMPING_FIELD)
                 lastrequest = config.get(LAST_REQUEST_SECTION, LAST_REQUEST_FIELD)
                 date = datetime.strptime(lastrequest, LAST_REQUEST_FORMAT)

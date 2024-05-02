@@ -29,7 +29,6 @@
 #################################################################################
 
 from config import TIPOLOGIE_BADGE_DA_IGNORARE
-from sqlalchemy.dialects import oracle
 
 class Stamping:
     """

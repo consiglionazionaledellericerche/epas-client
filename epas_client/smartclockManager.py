@@ -147,7 +147,7 @@ class SmartClockManager:
                     with open(log_file, 'r') as f:
                         first_line = f.readline().strip()
 
-                    response = re.search("Rx\d{4}", first_line).group()
+                    response = re.search(r"Rx\d{4}", first_line).group()
                     # Verifico che il messaggio del lettore sia quello di successo
                     if response != SUCCESS_MSG:
                         logging.error("Risposta del lettore inattesa, nessuna timbratura scaricata: %s", response)

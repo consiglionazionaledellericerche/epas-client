@@ -74,9 +74,10 @@ services:
       # - MAX_BAD_STAMPING_DAYS=   # Default: 10. Tutte le timbrature con problemi, più vecchie di questo numero di giorni dal momento dell'esecuzione, vengono buttate via
       # - SERVER_ERROR_CODES=      # Default: 401, 404, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509. Specificare i valori separati da virgola che comportano un reinvio delle timbrature
       # - MAPPING_OPERAZIONE_CLIENT_SERVER=       # Default: {'E':'0','U':'1'}
-      # - MAPPING_CAUSALI_CLIENT_SERVER=          # Default: {'0000': None, '0001': 'motiviDiServizio', '0007': 'pausaPranzo'}
-      # - FIX_CAUSALE_PAUSA_PRANZO =              # Default: False
-      # - CAUSALE_PAUSA_PRANZO_MIN_HOUR =         # Default: 12
-      # - CAUSALE_PAUSA_PRANZO_MAX_HOUR =         # Default: 15
+      # - MAPPING_CAUSALI_CLIENT_SERVER=${MAPPING_CAUSALI_CLIENT_SERVER}          # Default: {'0000': None, '0001': 'motiviDiServizio', '0007': 'pausaPranzo'}
+      # - FIX_CAUSALE_PAUSA_PRANZO=${FIX_CAUSALE_PAUSA_PRANZO}              # Default: False
+      # - CAUSALE_PAUSA_PRANZO_MIN_HOUR=${CAUSALE_PAUSA_PRANZO_MIN_HOUR}   # Default: 12
+      # - CAUSALE_PAUSA_PRANZO_MAX_HOUR=${CAUSALE_PAUSA_PRANZO_MAX_HOUR}   # Default: 15
+      # - SEND_ALL_STAMPINGS_EVERYTIME=${SEND_ALL_STAMPINGS_EVERYTIME}
 
     restart: unless-stopped

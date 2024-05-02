@@ -142,37 +142,42 @@ class SendWorker(Thread):
                 continue
             
             if stamp is not None:
+                if stamp.matricolaFirma in self.alreadySentStampings:
+                    logging.info("Ignorata timbratura perché gia' inviata. Timbratura line = %s. Timbratura = %s", line, stamp)
+                    self.queue.task_done()
+                    continue
                 if stamp.isToBeIgnored():
                     logging.info("Ignorata timbratura line = %s. Timbratura = %s", line, stamp)
-                else:
-                    try:
-                        if FIX_CAUSALE_PAUSA_PRANZO:
-                            if stamp.matricolaFirma in self.alreadySentStampings:
-                                stamp = fixStampingForMealBreak(stamp, self.alreadySentStampings[stamp.matricolaFirma])
-                            else:
-                                stamp = fixStampingForMealBreak(stamp, [])
-                        response = sendStamping(stamp)
+                    self.queue.task_done()
+                    continue
+                try:
+                    if FIX_CAUSALE_PAUSA_PRANZO:
+                        if stamp.matricolaFirma in self.alreadySentStampings:
+                            stamp = fixStampingForMealBreak(stamp, self.alreadySentStampings[stamp.matricolaFirma])
+                        else:
+                            stamp = fixStampingForMealBreak(stamp, [])
+                    response = sendStamping(stamp)
 
-                        if response is None:  # Caso di errore di connessione al server
-                            logging.debug("Timbratura non inserita in ePas: %s", line)
-                            self.badStampings.append(line)
-                        elif response.status_code in SERVER_ERROR_CODES:  # Risposta del server con un errore
-                            logging.warning("Errore nell'invio della timbratura %s al server di ePas: %s %s",
-                                            line, response.status_code, response.reason)
-                            self.badStampings.append(line)
-                        else:  # Invio OK
-                            logging.debug("Timbratura inserita correttamente in ePas:  %s", line)
-                            if stamp.matricolaFirma in self.alreadySentStampings:
-                                self.alreadySentStampings[stamp.matricolaFirma].append(stamp)
-                            else:
-                                self.alreadySentStampings[stamp.matricolaFirma] = [stamp]
-                            if self.filename:
-                                StampingImporter.registerStampingSent(self.filename, line)
-                    except Exception as e:
-                        logging.error("Eccezione nell'invio della timbratura line = %s. " + 
-                                      "Timbratura = %s. Inserita nelle badStampings. Eccezione = %s", line, stamp, e)
+                    if response is None:  # Caso di errore di connessione al server
+                        logging.debug("Timbratura non inserita in ePas: %s", line)
                         self.badStampings.append(line)
-                        raise e
+                    elif response.status_code in SERVER_ERROR_CODES:  # Risposta del server con un errore
+                        logging.warning("Errore nell'invio della timbratura %s al server di ePas: %s %s",
+                                        line, response.status_code, response.reason)
+                        self.badStampings.append(line)
+                    else:  # Invio OK
+                        logging.debug("Timbratura inserita correttamente in ePas:  %s", line)
+                        if stamp.matricolaFirma in self.alreadySentStampings:
+                            self.alreadySentStampings[stamp.matricolaFirma].append(stamp)
+                        else:
+                            self.alreadySentStampings[stamp.matricolaFirma] = [stamp]
+                        if self.filename:
+                            StampingImporter.registerStampingSent(self.filename, line)
+                except Exception as e:
+                    logging.error("Eccezione nell'invio della timbratura line = %s. " + 
+                                  "Timbratura = %s. Inserita nelle badStampings. Eccezione = %s", line, stamp, e)
+                    self.badStampings.append(line)
+                    raise e
             self.queue.task_done()
 
 
@@ -187,7 +192,7 @@ class StampingImporter:
         """
         Salva le timbrature inviate in un file per giorno.
         """
-        logging.info("Salvo nel file %s la timbratura inviata %s", filename, line)
+        logging.debug("Salvo nel file %s%s la timbratura inviata %s", filename, STAMPINGS_ALREADY_SENT_EXTENSION, line)
         with open("%s/%s" % (STAMPINGS_DIR, filename + STAMPINGS_ALREADY_SENT_EXTENSION), 'a+') as f:
             f.write(line + "\n")
 
@@ -199,13 +204,13 @@ class StampingImporter:
         fileNameSent = "%s/%s" %(STAMPINGS_DIR, filename + STAMPINGS_ALREADY_SENT_EXTENSION)
         if os.path.exists(fileNameSent):
             f = open(fileNameSent, "r")
-            logging.info("Processo il file %s per estrarne le timbrature gia' inviate", fileNameSent)
+            logging.debug("Processo il file %s per estrarne le timbrature gia' inviate", fileNameSent)
         else:
-            logging.info("Nessun file per le timbrature gia' inviate per %s", fileNameSent)
+            logging.debug("Nessun file per le timbrature gia' inviate per %s", fileNameSent)
             return []
         
         stampings = f.read().splitlines()
-        logging.info("Timbrature gia' inviate = %s", stampings)
+        logging.debug("Timbrature gia' inviate = %s", stampings)
         #Questo metodo di lettura delle righe toglie anche gli \n di fine riga
         return stampings
 
