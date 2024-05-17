@@ -140,12 +140,8 @@ class SendWorker(Thread):
                 self.parsingErrors.append(line)
                 self.queue.task_done()
                 continue
-            
+
             if stamp is not None:
-                if stamp.matricolaFirma in self.alreadySentStampings:
-                    logging.info("Ignorata timbratura perché gia' inviata. Timbratura line = %s. Timbratura = %s", line, stamp)
-                    self.queue.task_done()
-                    continue
                 if stamp.isToBeIgnored():
                     logging.info("Ignorata timbratura line = %s. Timbratura = %s", line, stamp)
                     self.queue.task_done()
@@ -210,6 +206,7 @@ class StampingImporter:
             return []
         
         stampings = f.read().splitlines()
+        f.close()
         logging.debug("Timbrature gia' inviate = %s", stampings)
         #Questo metodo di lettura delle righe toglie anche gli \n di fine riga
         return stampings

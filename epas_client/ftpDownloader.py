@@ -203,9 +203,7 @@ class FTPDownloader:
         lines = [line for line in lines if line not in alreadySentRawStampings]
 
         bad_stampings, parsing_errors = \
-            stampingImporter.sendStampingsOnEpas(
-                lines, alreadySentStampings = self._already_sent_stampings(file_name),
-                filename = file_name)
+            stampingImporter.sendStampingsOnEpas(lines, filename = file_name)
 
         if len(bad_stampings) > 0:
             # Rimuove eventuali duplicati
