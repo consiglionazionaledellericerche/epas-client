@@ -53,28 +53,4 @@ class Archive:
             except Exception as e:
                 logging.warn("Impossibile estrarre la data dal tracciato %s: %s", stamping, e)
 
-        Archive.remove_duplicates()
         return last_stamping, last_stamping_date
-
-    @staticmethod
-    def remove_duplicates():
-        """
-        ; rimuove tutti i duplicati dai file di archivio
-        :return: void
-        """
-        archived_files = os.listdir(ARCHIVES_DIR)
-        for file in archived_files:
-            file_path = os.path.join(ARCHIVES_DIR, file)
-            with open(file_path, 'r') as f:
-                file_lines = f.read().splitlines()
-                size_before = len(file_lines)
-                # Rimuove eventuali duplicati
-                file_lines = set(file_lines)
-                size_after = len(file_lines)
-
-                if size_before != size_after:
-                    os.remove(file_path)
-                    with open(file_path, 'w') as new_file:
-                        for line in file_lines:
-                            new_file.write("%s\n" % (line,))
-                    logging.info("Rimosse %d timbrature dal file %s", (size_before - size_after), file)
