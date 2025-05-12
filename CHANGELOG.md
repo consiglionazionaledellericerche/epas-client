@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2025-05-12
+### Changed
+ - nuova release per aggiornamento immagine docker di base
+
 ## [1.2.3] - 2021-03-08
 ### Changed
 - Ritorno alla python:3-alpine con builder separato per diminuire dimensioni immagine,
