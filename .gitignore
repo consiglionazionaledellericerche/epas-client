@@ -9,3 +9,5 @@
 /.settings
 .pydevproject
 /client.pid
+.venv
+/epas_client
